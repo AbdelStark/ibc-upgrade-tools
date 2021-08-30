@@ -4,6 +4,7 @@ import cli from 'cli-ux'
 import {Config} from '../../config'
 const logSymbols = require('log-symbols')
 const chalk = require('chalk')
+const fs = require('fs')
 
 export default class CheckPostmigration extends Command {
   static description = 'perform post migration check';
@@ -12,16 +13,17 @@ export default class CheckPostmigration extends Command {
     help: flags.help({char: 'h'}),
     old: flags.string({char: 'o', description: 'old node base url'}),
     new: flags.string({char: 'n', description: 'new node base url'}),
-    accounts: flags.string({char: 'a', description: 'accounts file'}),
+    data: flags.string({char: 'd', description: 'data file'}),
   };
 
   async run() {
     const {flags} = this.parse(CheckPostmigration)
-    const config = new Config(flags.old as string, flags.new as string)
+    const config = new Config(flags.old as string, flags.new as string, flags.data as string)
     this.log(`old node base url: ${chalk.yellow(config.oldNodeBaseUrl)}`)
     this.log(`new node base url: ${chalk.green(config.newNodeBaseUrl)}`)
-    this.log(`accounts file: ${chalk.blue(flags.accounts)}`)
+    this.log(`data file: ${chalk.blue(flags.data)}`)
     await this.getTotalSupply(config)
+    await this.checkBalances(config)
     this.exit()
   }
 
@@ -40,6 +42,33 @@ export default class CheckPostmigration extends Command {
         this.log(`${logSymbols.error} total supply mismatch`)
       }
 
+      cli.action.stop(logSymbols.success)
+    } catch (error) {
+      cli.action.stop(logSymbols.error)
+      throw error
+    }
+  }
+
+  private async checkBalances(config: Config): Promise<void> {
+    cli.action.start('Fetching account balances')
+    try {
+      const rawData = fs.readFileSync(config.dataFilePath)
+      const data = JSON.parse(rawData)
+      const accounts = data.accounts
+      for (const account of accounts) {
+        this.log(`Checking account: ${chalk.blue(account.address)}`)
+        const balanceOldResponse = await axios.get(`${config.oldNodeBaseUrl}/bank/balances/${account.address}`)
+        const oldBalance = balanceOldResponse.data.result[0].amount
+        const balanceNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/bank/v1beta1/balances/${account.address}`)
+        const newBalance = balanceNewResponse.data.balances[0].amount
+        this.log(`balance old: ${chalk.yellow(oldBalance)}`)
+        this.log(`balance new: ${chalk.green(newBalance)}`)
+        if (oldBalance === newBalance) {
+          this.log(`${logSymbols.success} balance match`)
+        } else {
+          this.log(`${logSymbols.error} balance mismatch`)
+        }
+      }
       cli.action.stop(logSymbols.success)
     } catch (error) {
       cli.action.stop(logSymbols.error)
