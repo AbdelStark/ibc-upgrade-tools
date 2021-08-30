@@ -8,15 +8,14 @@ IBC upgrade tools
 [![License](https://img.shields.io/npm/l/ibc-upgrade-tools.svg)](https://github.com/abdelhamidbakhta/ibc-upgrade-tools/blob/master/package.json)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [ibc-upgrade-tools](#ibc-upgrade-tools)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g ibc-upgrade-tools
 $ ibc-upgrade-tools COMMAND
@@ -28,29 +27,26 @@ USAGE
   $ ibc-upgrade-tools COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
+* [`ibc-upgrade-tools check:postmigration`](#ibc-upgrade-tools-checkpostmigration)
+* [`ibc-upgrade-tools help [COMMAND]`](#ibc-upgrade-tools-help-command)
 
-- [`ibc-upgrade-tools check:postmigration [FILE]`](#ibc-upgrade-tools-checkpostmigration-file)
-- [`ibc-upgrade-tools hello [FILE]`](#ibc-upgrade-tools-hello-file)
-- [`ibc-upgrade-tools help [COMMAND]`](#ibc-upgrade-tools-help-command)
+## `ibc-upgrade-tools check:postmigration`
 
-## `ibc-upgrade-tools check:postmigration [FILE]`
-
-describe the command here
+perform post migration check
 
 ```
 USAGE
-  $ ibc-upgrade-tools check:postmigration [FILE]
+  $ ibc-upgrade-tools check:postmigration
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help     show CLI help
+  -n, --new=new  new node base url
+  -o, --old=old  old node base url
 ```
 
 _See code: [src/commands/check/postmigration.ts](https://github.com/abdelhamidbakhta/ibc-upgrade-tools/blob/v0.0.1/src/commands/check/postmigration.ts)_
@@ -71,5 +67,4 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.3/src/commands/help.ts)_
-
 <!-- commandsstop -->
