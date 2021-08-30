@@ -21,7 +21,7 @@ $ npm install -g ibc-upgrade-tools
 $ ibc-upgrade-tools COMMAND
 running command...
 $ ibc-upgrade-tools (-v|--version|version)
-ibc-upgrade-tools/0.0.4 darwin-x64 node-v16.6.1
+ibc-upgrade-tools/0.0.5 darwin-x64 node-v16.6.1
 $ ibc-upgrade-tools --help [COMMAND]
 USAGE
   $ ibc-upgrade-tools COMMAND
@@ -44,13 +44,13 @@ USAGE
   $ ibc-upgrade-tools check:postmigration
 
 OPTIONS
-  -a, --accounts=accounts  accounts file
-  -h, --help               show CLI help
-  -n, --new=new            new node base url
-  -o, --old=old            old node base url
+  -d, --data=data  data file
+  -h, --help       show CLI help
+  -n, --new=new    new node base url
+  -o, --old=old    old node base url
 ```
 
-_See code: [src/commands/check/postmigration.ts](https://github.com/abdelhamidbakhta/ibc-upgrade-tools/blob/v0.0.4/src/commands/check/postmigration.ts)_
+_See code: [src/commands/check/postmigration.ts](https://github.com/abdelhamidbakhta/ibc-upgrade-tools/blob/v0.0.5/src/commands/check/postmigration.ts)_
 
 ## `ibc-upgrade-tools help [COMMAND]`
 
