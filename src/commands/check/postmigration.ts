@@ -27,6 +27,8 @@ export default class CheckPostmigration extends Command {
     await this.getTotalSupply(config)
     await this.checkBalances(config)
     await this.checkVestingAccounts(config)
+    await this.checkStakingPool(config)
+    await this.checkValidators(config)
     this.exit()
   }
 
@@ -77,6 +79,7 @@ export default class CheckPostmigration extends Command {
     }
   }
 
+  // TODO: implement the logic
   private async checkVestingAccounts(config: Config): Promise<void> {
     cli.action.start('Fetching vesting accounts')
     try {
@@ -84,6 +87,28 @@ export default class CheckPostmigration extends Command {
       for (const vestingAccount of vestingAccounts) {
         this.log(`Checking account: ${chalk.blue(vestingAccount.address)}`)
       }
+      cli.action.stop(logSymbols.success)
+    } catch (error) {
+      cli.action.stop(logSymbols.error)
+      throw error
+    }
+  }
+
+  // TODO: implement the logic
+  private async checkStakingPool(config: Config): Promise<void> {
+    cli.action.start('Fetching staking pool data')
+    try {
+      cli.action.stop(logSymbols.success)
+    } catch (error) {
+      cli.action.stop(logSymbols.error)
+      throw error
+    }
+  }
+
+  // TODO: implement the logic
+  private async checkValidators(config: Config): Promise<void> {
+    cli.action.start('Fetching validators data')
+    try {
       cli.action.stop(logSymbols.success)
     } catch (error) {
       cli.action.stop(logSymbols.error)
