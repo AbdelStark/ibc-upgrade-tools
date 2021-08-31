@@ -111,6 +111,8 @@ export default class CheckPostmigration extends Command {
   private async checkValidators(config: Config): Promise<void> {
     cli.action.start('Fetching validators data')
     try {
+      // old: /staking/validators
+      // new: /cosmos/staking/v1beta1/validators
       cli.action.stop(logSymbols.success)
     } catch (error) {
       cli.action.stop(logSymbols.error)
