@@ -59,6 +59,7 @@ export default class CheckPostmigration extends Command {
     try {
       const accounts = config.data.accounts
       for (const account of accounts) {
+        this.log()
         this.log(`Checking account: ${chalk.blue(account.address)}`)
         const balanceOldResponse = await axios.get(`${config.oldNodeBaseUrl}/bank/balances/${account.address}`)
         const oldBalance = balanceOldResponse.data.result[0].amount
@@ -71,6 +72,7 @@ export default class CheckPostmigration extends Command {
         } else {
           this.log(`${logSymbols.error} balance mismatch`)
         }
+        this.log()
       }
       cli.action.stop(logSymbols.success)
     } catch (error) {
