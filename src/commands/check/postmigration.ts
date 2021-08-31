@@ -98,6 +98,8 @@ export default class CheckPostmigration extends Command {
   private async checkStakingPool(config: Config): Promise<void> {
     cli.action.start('Fetching staking pool data')
     try {
+      // old: /staking/pool
+      // new: /cosmos/staking/v1beta1/pool
       cli.action.stop(logSymbols.success)
     } catch (error) {
       cli.action.stop(logSymbols.error)
