@@ -7,6 +7,11 @@
     {
       "address": "tki1zdchyg09espegtxw3tgkvgggq78u6ykwc0882r"
     }
+  ],
+  "vestingAccounts": [
+    {
+      "address": "ki133j3xh9wjxq5lcwpvssw90jggszv2s3kkn4lpl"
+    }
   ]
 }
 
