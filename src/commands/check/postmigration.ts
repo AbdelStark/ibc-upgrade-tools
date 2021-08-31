@@ -18,12 +18,15 @@ export default class CheckPostmigration extends Command {
 
   async run() {
     const {flags} = this.parse(CheckPostmigration)
-    const config = new Config(flags.old as string, flags.new as string, flags.data as string)
+    const rawData = fs.readFileSync(flags.data)
+    const data = JSON.parse(rawData)
+    const config = new Config(flags.old as string, flags.new as string, flags.data as string, data)
     this.log(`old node base url: ${chalk.yellow(config.oldNodeBaseUrl)}`)
     this.log(`new node base url: ${chalk.green(config.newNodeBaseUrl)}`)
     this.log(`data file: ${chalk.blue(flags.data)}`)
     await this.getTotalSupply(config)
     await this.checkBalances(config)
+    await this.checkVestingAccounts(config)
     this.exit()
   }
 
@@ -52,9 +55,7 @@ export default class CheckPostmigration extends Command {
   private async checkBalances(config: Config): Promise<void> {
     cli.action.start('Fetching account balances')
     try {
-      const rawData = fs.readFileSync(config.dataFilePath)
-      const data = JSON.parse(rawData)
-      const accounts = data.accounts
+      const accounts = config.data.accounts
       for (const account of accounts) {
         this.log(`Checking account: ${chalk.blue(account.address)}`)
         const balanceOldResponse = await axios.get(`${config.oldNodeBaseUrl}/bank/balances/${account.address}`)
@@ -68,6 +69,20 @@ export default class CheckPostmigration extends Command {
         } else {
           this.log(`${logSymbols.error} balance mismatch`)
         }
+      }
+      cli.action.stop(logSymbols.success)
+    } catch (error) {
+      cli.action.stop(logSymbols.error)
+      throw error
+    }
+  }
+
+  private async checkVestingAccounts(config: Config): Promise<void> {
+    cli.action.start('Fetching vesting accounts')
+    try {
+      const vestingAccounts = config.data.vestingAccounts
+      for (const vestingAccount of vestingAccounts) {
+        this.log(`Checking account: ${chalk.blue(vestingAccount.address)}`)
       }
       cli.action.stop(logSymbols.success)
     } catch (error) {
