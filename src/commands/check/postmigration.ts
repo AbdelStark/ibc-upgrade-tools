@@ -122,7 +122,7 @@ export default class CheckPostmigration extends Command {
           const oldValidator = oldValidators[i]
           const newValidator = newValidators[i]
           this.log(`\nChecking validator: ${chalk.blue(oldValidator.operator_address)}`)
-          this.compareAndDisplayDiff('VALIDATOR TOKENS', oldValidator.tokens, newValidator.tokens)
+          this.compareAndDisplayDiff('VALIDATOR TOKENS', oldValidator.tokens, newValidator.tokens, false)
         }
       }
       cli.action.stop(logSymbols.success)
@@ -132,14 +132,19 @@ export default class CheckPostmigration extends Command {
     }
   }
 
-  private compareAndDisplayDiff(label: string, value1Str: any, value2Str: any): boolean {
+  private compareAndDisplayDiff(label: string, value1Str: any, value2Str: any, displayIfEqual = true): boolean {
     this.log()
     const value1 = Number(value1Str)
     const value2 = Number(value2Str)
-    this.log(`[PRE MIGRATION]  ${label}: ${chalk.blue(value1)}`)
-    this.log(`[POST MIGRATION] ${label}: ${chalk.blue(value2)}`)
-    if (value1 === value2) {
-      this.log(`${logSymbols.success} ${label} ${chalk.green('MATCH')}`)
+    const isEq = value1 === value2
+    if(!isEq || displayIfEqual) {
+      this.log(`[PRE MIGRATION]  ${label}: ${chalk.blue(value1)}`)
+      this.log(`[POST MIGRATION] ${label}: ${chalk.blue(value2)}`)
+    }
+    if (isEq) {
+      if (displayIfEqual) {
+        this.log(`${logSymbols.success} ${label} ${chalk.green('MATCH')}`)
+      }
       return true
     }
     let suffix
