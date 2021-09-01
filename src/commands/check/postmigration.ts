@@ -23,8 +23,6 @@ export default class CheckPostmigration extends Command {
     const config = new Config(flags.old as string, flags.new as string, flags.data as string, data)
     this.log(`[PRE MIGRATION]  REFERENCE NODE URL: ${chalk.blue(config.oldNodeBaseUrl)}`)
     this.log(`[POST MIGRATION] REFERENCE NODE URL: ${chalk.blue(config.newNodeBaseUrl)}`)
-    this.log(`old node base url: ${chalk.yellow(config.oldNodeBaseUrl)}`)
-    this.log(`new node base url: ${chalk.green(config.newNodeBaseUrl)}`)
     await this.getTotalSupply(config)
     await this.checkBalances(config)
     await this.checkVestingAccounts(config)
