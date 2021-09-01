@@ -39,14 +39,7 @@ export default class CheckPostmigration extends Command {
       const oldTotalSupply = totalSupplyOldResponse.data.result[0].amount
       const totalSupplyNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/bank/v1beta1/supply`)
       const newTotalSupply = totalSupplyNewResponse.data.supply[0].amount
-      this.log(`total supply old: ${chalk.yellow(oldTotalSupply)}`)
-      this.log(`total supply new: ${chalk.green(newTotalSupply)}`)
-      if (oldTotalSupply === newTotalSupply) {
-        this.log(`${logSymbols.success} total supply match`)
-      } else {
-        this.log(`${logSymbols.error} total supply mismatch`)
-      }
-
+      this.compareAndDisplayDiff('TOTAL SUPPLY', oldTotalSupply, newTotalSupply)
       cli.action.stop(logSymbols.success)
     } catch (error) {
       cli.action.stop(logSymbols.error)
@@ -65,13 +58,7 @@ export default class CheckPostmigration extends Command {
         const oldBalance = balanceOldResponse.data.result[0].amount
         const balanceNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/bank/v1beta1/balances/${account.address}`)
         const newBalance = balanceNewResponse.data.balances[0].amount
-        this.log(`balance old: ${chalk.yellow(oldBalance)}`)
-        this.log(`balance new: ${chalk.green(newBalance)}`)
-        if (oldBalance === newBalance) {
-          this.log(`${logSymbols.success} balance match`)
-        } else {
-          this.log(`${logSymbols.error} balance mismatch`)
-        }
+        this.compareAndDisplayDiff('BALANCE', oldBalance, newBalance)
         this.log()
       }
       cli.action.stop(logSymbols.success)
@@ -102,7 +89,20 @@ export default class CheckPostmigration extends Command {
     try {
       // old: /staking/pool
       // new: /cosmos/staking/v1beta1/pool
+      const stakingPoolOldResponse = await axios.get(`${config.oldNodeBaseUrl}/staking/pool`)
+      const oldData = stakingPoolOldResponse.data.result
+      const oldBondedTokens = oldData.bonded_tokens
+      const oldNotBondedTokens = oldData.not_bonded_tokens
+      const stakingPoolNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/staking/v1beta1/pool`)
+      const newData = stakingPoolNewResponse.data.pool
+      const newBondedTokens = newData.bonded_tokens
+      const newNotBondedTokens = newData.not_bonded_tokens
+      this.compareAndDisplayDiff('BONDED TOKENS', oldBondedTokens, newBondedTokens)
+      this.compareAndDisplayDiff('NOT BONDED TOKENS', oldNotBondedTokens, newNotBondedTokens)
+
+      this.log()
       cli.action.stop(logSymbols.success)
+      this.log()
     } catch (error) {
       cli.action.stop(logSymbols.error)
       throw error
@@ -119,6 +119,25 @@ export default class CheckPostmigration extends Command {
     } catch (error) {
       cli.action.stop(logSymbols.error)
       throw error
+    }
+  }
+
+  private compareAndDisplayDiff(label: string, value1Str: any, value2Str: any): void{
+    this.log()
+    const value1 = Number(value1Str)
+    const value2 = Number(value2Str)
+    this.log(`[PRE MIGRATION]  ${label}: ${chalk.blue(value1)}`)
+    this.log(`[POST MIGRATION] ${label}: ${chalk.blue(value2)}`)
+    if (value1 === value2) {
+      this.log(`${logSymbols.success} ${label} ${chalk.green('MATCH')}`)
+    } else {
+      let suffix
+      if (value1 < value2) {
+        suffix = `( + ${value2 - value1} )`
+      } else {
+        suffix = `( - ${value1 - value2} )`
+      }
+      this.log(`${logSymbols.error} ${label} ${chalk.red('MISMATCH')} ${chalk.yellowBright(suffix)}`)
     }
   }
 }
