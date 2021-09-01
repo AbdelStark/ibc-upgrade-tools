@@ -82,12 +82,9 @@ export default class CheckPostmigration extends Command {
     }
   }
 
-  // TODO: implement the logic
   private async checkStakingPool(config: Config): Promise<void> {
     cli.action.start('Fetching staking pool data')
     try {
-      // old: /staking/pool
-      // new: /cosmos/staking/v1beta1/pool
       const stakingPoolOldResponse = await axios.get(`${config.oldNodeBaseUrl}/staking/pool`)
       const oldData = stakingPoolOldResponse.data.result
       const oldBondedTokens = oldData.bonded_tokens
@@ -108,12 +105,26 @@ export default class CheckPostmigration extends Command {
     }
   }
 
-  // TODO: implement the logic
   private async checkValidators(config: Config): Promise<void> {
     cli.action.start('Fetching validators data')
     try {
-      // old: /staking/validators
-      // new: /cosmos/staking/v1beta1/validators
+      const validatorsOldResponse = await axios.get(`${config.oldNodeBaseUrl}/staking/validators`)
+      const oldValidators = CheckPostmigration.sortValidators(validatorsOldResponse.data.result)
+      const validatorsNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/staking/v1beta1/validators`)
+      const newValidators = CheckPostmigration.sortValidators(validatorsNewResponse.data.validators)
+      const oldValidatorCount = oldValidators.length
+      const newValidatorCount = newValidators.length
+      const sameCount = this.compareAndDisplayDiff('VALIDATOR COUNT', oldValidatorCount, newValidatorCount)
+      const force = true
+      const limit = 100
+      if (sameCount || force) {
+        for (let i = 0; i < limit; i++) {
+          const oldValidator = oldValidators[i]
+          const newValidator = newValidators[i]
+          this.log(`\nChecking validator: ${chalk.blue(oldValidator.operator_address)}`)
+          this.compareAndDisplayDiff('VALIDATOR TOKENS', oldValidator.tokens, newValidator.tokens)
+        }
+      }
       cli.action.stop(logSymbols.success)
     } catch (error) {
       cli.action.stop(logSymbols.error)
@@ -121,7 +132,7 @@ export default class CheckPostmigration extends Command {
     }
   }
 
-  private compareAndDisplayDiff(label: string, value1Str: any, value2Str: any): void{
+  private compareAndDisplayDiff(label: string, value1Str: any, value2Str: any): boolean {
     this.log()
     const value1 = Number(value1Str)
     const value2 = Number(value2Str)
@@ -129,14 +140,19 @@ export default class CheckPostmigration extends Command {
     this.log(`[POST MIGRATION] ${label}: ${chalk.blue(value2)}`)
     if (value1 === value2) {
       this.log(`${logSymbols.success} ${label} ${chalk.green('MATCH')}`)
-    } else {
-      let suffix
-      if (value1 < value2) {
-        suffix = `( + ${value2 - value1} )`
-      } else {
-        suffix = `( - ${value1 - value2} )`
-      }
-      this.log(`${logSymbols.error} ${label} ${chalk.red('MISMATCH')} ${chalk.yellowBright(suffix)}`)
+      return true
     }
+    let suffix
+    if (value1 < value2) {
+      suffix = `( + ${value2 - value1} )`
+    } else {
+      suffix = `( - ${value1 - value2} )`
+    }
+    this.log(`${logSymbols.error} ${label} ${chalk.red('MISMATCH')} ${chalk.yellowBright(suffix)}`)
+    return false
+  }
+
+  private static sortValidators(validators: any): any {
+    return validators.sort((a: any, b: any) => a.operator_address.localeCompare(b.operator_address))
   }
 }
