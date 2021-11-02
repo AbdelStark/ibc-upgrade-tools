@@ -21,7 +21,7 @@ $ npm install -g ibc-upgrade-tools
 $ ibc-upgrade-tools COMMAND
 running command...
 $ ibc-upgrade-tools (-v|--version|version)
-ibc-upgrade-tools/0.0.7 darwin-x64 node-v16.6.1
+ibc-upgrade-tools/0.0.7 darwin-x64 node-v14.18.0
 $ ibc-upgrade-tools --help [COMMAND]
 USAGE
   $ ibc-upgrade-tools COMMAND
