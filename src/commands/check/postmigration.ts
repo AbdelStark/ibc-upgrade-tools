@@ -115,13 +115,12 @@ export default class CheckPostmigration extends Command {
       const oldValidatorCount = oldValidators.length
       const newValidatorCount = newValidators.length
       const sameCount = this.compareAndDisplayDiff('VALIDATOR COUNT', oldValidatorCount, newValidatorCount)
-      const force = true
+      const force = false
       const limit = 100
       if (sameCount || force) {
         for (let i = 0; i < limit; i++) {
           const oldValidator = oldValidators[i]
           const newValidator = newValidators[i]
-          this.log(`\nChecking validator: ${chalk.blue(oldValidator.operator_address)}`)
           this.compareAndDisplayDiff('VALIDATOR TOKENS', oldValidator.tokens, newValidator.tokens, false)
         }
       }
