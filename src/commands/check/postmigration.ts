@@ -51,14 +51,14 @@ export default class CheckPostmigration extends Command {
     try {
       const accounts = config.data.accounts
       for (const account of accounts) {
-        this.log()
-        this.log(`Checking account: ${chalk.blue(account.address)}`)
+        // this.log()
+        // this.log(`Checking account: ${chalk.blue(account.address)}`)
         const balanceOldResponse = await axios.get(`${config.oldNodeBaseUrl}/bank/balances/${account.address}`)
         const oldBalance = balanceOldResponse.data.result[0].amount
         const balanceNewResponse = await axios.get(`${config.newNodeBaseUrl}/bank/balances/${account.address}`)
         const newBalance = balanceNewResponse.data.result[0].amount
-        this.compareAndDisplayDiff('BALANCE', oldBalance, newBalance)
-        this.log()
+        this.compareAndDisplayDiff('BALANCE', oldBalance, newBalance, false)
+        // this.log()
       }
       cli.action.stop(logSymbols.success)
     } catch (error) {
@@ -93,12 +93,12 @@ export default class CheckPostmigration extends Command {
       const newData = stakingPoolNewResponse.data.result
       const newBondedTokens = newData.bonded_tokens
       const newNotBondedTokens = newData.not_bonded_tokens
-      this.compareAndDisplayDiff('BONDED TOKENS', oldBondedTokens, newBondedTokens)
-      this.compareAndDisplayDiff('NOT BONDED TOKENS', oldNotBondedTokens, newNotBondedTokens)
+      this.compareAndDisplayDiff('BONDED TOKENS', oldBondedTokens, newBondedTokens, false)
+      this.compareAndDisplayDiff('NOT BONDED TOKENS', oldNotBondedTokens, newNotBondedTokens, false)
 
-      this.log()
+      // this.log()
       cli.action.stop(logSymbols.success)
-      this.log()
+      // this.log()
     } catch (error) {
       cli.action.stop(logSymbols.error)
       throw error
@@ -135,7 +135,9 @@ export default class CheckPostmigration extends Command {
   }
 
   private compareAndDisplayDiff(label: string, value1Str: any, value2Str: any, displayIfEqual = true): boolean {
-    this.log()
+    if(displayIfEqual) {
+      this.log()
+    }
     const value1 = Number(value1Str)
     const value2 = Number(value2Str)
     const isEq = value1 === value2
