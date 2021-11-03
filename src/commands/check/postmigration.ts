@@ -73,7 +73,7 @@ export default class CheckPostmigration extends Command {
     try {
       const vestingAccounts = config.data.vestingAccounts
       for (const vestingAccount of vestingAccounts) {
-        this.log(`Checking account: ${chalk.blue(vestingAccount.address)}`)
+        // this.log(`Checking account: ${chalk.blue(vestingAccount.address)}`)
       }
       cli.action.stop(logSymbols.success)
     } catch (error) {
