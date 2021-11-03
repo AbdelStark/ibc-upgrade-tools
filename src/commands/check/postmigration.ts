@@ -114,14 +114,17 @@ export default class CheckPostmigration extends Command {
       const newValidators = CheckPostmigration.sortValidators(validatorsNewResponse.data.validators)
       const oldValidatorCount = oldValidators.length
       const newValidatorCount = newValidators.length
-      const sameCount = this.compareAndDisplayDiff('VALIDATOR COUNT', oldValidatorCount, newValidatorCount)
-      const force = false
-      const limit = 100
-      if (sameCount || force) {
-        for (let i = 0; i < limit; i++) {
-          const oldValidator = oldValidators[i]
-          const newValidator = newValidators[i]
-          this.compareAndDisplayDiff('VALIDATOR TOKENS', oldValidator.tokens, newValidator.tokens, false)
+      this.log(`Old validator count: ${oldValidatorCount}`)
+      this.log(`New validator count: ${newValidatorCount}`)
+      const oldValidatorsMap = new Map()
+      for (const oldValidator of oldValidators) {
+        oldValidatorsMap.set(oldValidator.operator_address, oldValidator)
+      }
+      for (const newValidator of newValidators) {
+        if (oldValidatorsMap.has(newValidator.operator_address)) {
+          this.compareAndDisplayDiff('VALIDATOR TOKENS', newValidator.tokens, oldValidatorsMap.get(newValidator.operator_address).tokens)
+        } else {
+          this.log(`${logSymbols.error} Validator ${newValidator.operator_address} was not present before migration`)
         }
       }
       cli.action.stop(logSymbols.success)
@@ -136,7 +139,7 @@ export default class CheckPostmigration extends Command {
     const value1 = Number(value1Str)
     const value2 = Number(value2Str)
     const isEq = value1 === value2
-    if(!isEq || displayIfEqual) {
+    if (!isEq || displayIfEqual) {
       this.log(`[PRE MIGRATION]  ${label}: ${chalk.blue(value1)}`)
       this.log(`[POST MIGRATION] ${label}: ${chalk.blue(value2)}`)
     }
