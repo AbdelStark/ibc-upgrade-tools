@@ -37,7 +37,7 @@ export default class CheckPostmigration extends Command {
       const totalSupplyOldResponse = await axios.get(`${config.oldNodeBaseUrl}/supply/total`)
       const oldTotalSupply = totalSupplyOldResponse.data.result[0].amount
       const totalSupplyNewResponse = await axios.get(`${config.newNodeBaseUrl}/supply/total`)
-      const newTotalSupply = totalSupplyNewResponse.data.result[0].amount
+      const newTotalSupply = totalSupplyNewResponse.data.supply[0].amount
       this.compareAndDisplayDiff('TOTAL SUPPLY', oldTotalSupply, newTotalSupply)
       cli.action.stop(logSymbols.success)
     } catch (error) {
