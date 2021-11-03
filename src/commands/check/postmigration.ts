@@ -23,12 +23,29 @@ export default class CheckPostmigration extends Command {
     const config = new Config(flags.old as string, flags.new as string, flags.data as string, data)
     this.log(`[PRE MIGRATION]  REFERENCE NODE URL: ${chalk.blue(config.oldNodeBaseUrl)}`)
     this.log(`[POST MIGRATION] REFERENCE NODE URL: ${chalk.blue(config.newNodeBaseUrl)}`)
+    await this.getLastestBlockHeight(config)
     await this.getTotalSupply(config)
     await this.checkBalances(config)
     await this.checkVestingAccounts(config)
     await this.checkStakingPool(config)
     await this.checkValidators(config)
     this.exit()
+  }
+
+  private async getLastestBlockHeight(config: Config): Promise<void> {
+    cli.action.start('Fetching latest block height')
+    try {
+      const oldResponse = await axios.get(`${config.oldNodeBaseUrl}/blocks/latest`)
+      const oldHeight = oldResponse.data.block.height
+      this.log(`Old block height: ${oldHeight}`)
+      const newResponse = await axios.get(`${config.newNodeBaseUrl}/blocks/latest`)
+      const newHeight = newResponse.data.block.height
+      this.log(`New block height: ${newHeight}`)
+      cli.action.stop(logSymbols.success)
+    } catch (error) {
+      cli.action.stop(logSymbols.error)
+      throw error
+    }
   }
 
   private async getTotalSupply(config: Config): Promise<void> {
