@@ -71,10 +71,13 @@ export default class CheckPostmigration extends Command {
   private async checkVestingAccounts(config: Config): Promise<void> {
     cli.action.start('Fetching vesting accounts')
     try {
-      const vestingAccounts = config.data.vestingAccounts
-      for (const vestingAccount of vestingAccounts) {
-        // this.log(`Checking account: ${chalk.blue(vestingAccount.address)}`)
+      if (config === null) {
+        this.error('Bad config')
       }
+      /* const vestingAccounts = config.data.vestingAccounts
+      for (const vestingAccount of vestingAccounts) {
+        this.log(`Checking account: ${chalk.blue(vestingAccount.address)}`)
+      } */
       cli.action.stop(logSymbols.success)
     } catch (error) {
       cli.action.stop(logSymbols.error)
@@ -135,7 +138,7 @@ export default class CheckPostmigration extends Command {
   }
 
   private compareAndDisplayDiff(label: string, value1Str: any, value2Str: any, displayIfEqual = true): boolean {
-    if(displayIfEqual) {
+    if (displayIfEqual) {
       this.log()
     }
     const value1 = Number(value1Str)
