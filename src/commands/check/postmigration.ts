@@ -36,8 +36,8 @@ export default class CheckPostmigration extends Command {
     try {
       const totalSupplyOldResponse = await axios.get(`${config.oldNodeBaseUrl}/supply/total`)
       const oldTotalSupply = totalSupplyOldResponse.data.result[0].amount
-      const totalSupplyNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/bank/v1beta1/supply`)
-      const newTotalSupply = totalSupplyNewResponse.data.supply[0].amount
+      const totalSupplyNewResponse = await axios.get(`${config.newNodeBaseUrl}/supply/total`)
+      const newTotalSupply = totalSupplyNewResponse.data.result[0].amount
       this.compareAndDisplayDiff('TOTAL SUPPLY', oldTotalSupply, newTotalSupply)
       cli.action.stop(logSymbols.success)
     } catch (error) {
@@ -56,7 +56,7 @@ export default class CheckPostmigration extends Command {
         const balanceOldResponse = await axios.get(`${config.oldNodeBaseUrl}/bank/balances/${account.address}`)
         const oldBalance = balanceOldResponse.data.result[0].amount
         const balanceNewResponse = await axios.get(`${config.newNodeBaseUrl}/bank/balances/${account.address}`)
-        const newBalance = balanceNewResponse.data.balances[0].amount
+        const newBalance = balanceNewResponse.data.result[0].amount
         this.compareAndDisplayDiff('BALANCE', oldBalance, newBalance)
         this.log()
       }
@@ -90,7 +90,7 @@ export default class CheckPostmigration extends Command {
       const oldBondedTokens = oldData.bonded_tokens
       const oldNotBondedTokens = oldData.not_bonded_tokens
       const stakingPoolNewResponse = await axios.get(`${config.newNodeBaseUrl}/staking/pool`)
-      const newData = stakingPoolNewResponse.data.pool
+      const newData = stakingPoolNewResponse.data.result
       const newBondedTokens = newData.bonded_tokens
       const newNotBondedTokens = newData.not_bonded_tokens
       this.compareAndDisplayDiff('BONDED TOKENS', oldBondedTokens, newBondedTokens)
@@ -111,7 +111,7 @@ export default class CheckPostmigration extends Command {
       const validatorsOldResponse = await axios.get(`${config.oldNodeBaseUrl}/staking/validators`)
       const oldValidators = CheckPostmigration.sortValidators(validatorsOldResponse.data.result)
       const validatorsNewResponse = await axios.get(`${config.newNodeBaseUrl}/staking/validators`)
-      const newValidators = CheckPostmigration.sortValidators(validatorsNewResponse.data.validators)
+      const newValidators = CheckPostmigration.sortValidators(validatorsNewResponse.data.result)
       const oldValidatorCount = oldValidators.length
       const newValidatorCount = newValidators.length
       this.log(`Old validator count: ${oldValidatorCount}`)
