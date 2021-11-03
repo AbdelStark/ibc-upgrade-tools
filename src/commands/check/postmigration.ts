@@ -55,7 +55,7 @@ export default class CheckPostmigration extends Command {
         this.log(`Checking account: ${chalk.blue(account.address)}`)
         const balanceOldResponse = await axios.get(`${config.oldNodeBaseUrl}/bank/balances/${account.address}`)
         const oldBalance = balanceOldResponse.data.result[0].amount
-        const balanceNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/bank/v1beta1/balances/${account.address}`)
+        const balanceNewResponse = await axios.get(`${config.newNodeBaseUrl}/bank/balances/${account.address}`)
         const newBalance = balanceNewResponse.data.balances[0].amount
         this.compareAndDisplayDiff('BALANCE', oldBalance, newBalance)
         this.log()
@@ -89,7 +89,7 @@ export default class CheckPostmigration extends Command {
       const oldData = stakingPoolOldResponse.data.result
       const oldBondedTokens = oldData.bonded_tokens
       const oldNotBondedTokens = oldData.not_bonded_tokens
-      const stakingPoolNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/staking/v1beta1/pool`)
+      const stakingPoolNewResponse = await axios.get(`${config.newNodeBaseUrl}/staking/pool`)
       const newData = stakingPoolNewResponse.data.pool
       const newBondedTokens = newData.bonded_tokens
       const newNotBondedTokens = newData.not_bonded_tokens
@@ -110,7 +110,7 @@ export default class CheckPostmigration extends Command {
     try {
       const validatorsOldResponse = await axios.get(`${config.oldNodeBaseUrl}/staking/validators`)
       const oldValidators = CheckPostmigration.sortValidators(validatorsOldResponse.data.result)
-      const validatorsNewResponse = await axios.get(`${config.newNodeBaseUrl}/cosmos/staking/v1beta1/validators`)
+      const validatorsNewResponse = await axios.get(`${config.newNodeBaseUrl}/staking/validators`)
       const newValidators = CheckPostmigration.sortValidators(validatorsNewResponse.data.validators)
       const oldValidatorCount = oldValidators.length
       const newValidatorCount = newValidators.length
