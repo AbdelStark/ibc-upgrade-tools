@@ -122,7 +122,7 @@ export default class CheckPostmigration extends Command {
       }
       for (const newValidator of newValidators) {
         if (oldValidatorsMap.has(newValidator.operator_address)) {
-          this.compareAndDisplayDiff('VALIDATOR TOKENS', newValidator.tokens, oldValidatorsMap.get(newValidator.operator_address).tokens)
+          this.compareAndDisplayDiff('VALIDATOR TOKENS', newValidator.tokens, oldValidatorsMap.get(newValidator.operator_address).tokens, false)
         } else {
           this.log(`${logSymbols.error} Validator ${newValidator.operator_address} was not present before migration`)
         }
