@@ -36,10 +36,10 @@ export default class CheckPostmigration extends Command {
     cli.action.start('Fetching latest block height')
     try {
       const oldResponse = await axios.get(`${config.oldNodeBaseUrl}/blocks/latest`)
-      const oldHeight = oldResponse.data.block.height
+      const oldHeight = oldResponse.data.block.header.height
       this.log(`Old block height: ${oldHeight}`)
       const newResponse = await axios.get(`${config.newNodeBaseUrl}/blocks/latest`)
-      const newHeight = newResponse.data.block.height
+      const newHeight = newResponse.data.block.header.height
       this.log(`New block height: ${newHeight}`)
       cli.action.stop(logSymbols.success)
     } catch (error) {
