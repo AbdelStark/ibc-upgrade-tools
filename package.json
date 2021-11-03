@@ -1,7 +1,7 @@
 {
   "name": "ibc-upgrade-tools",
   "description": "IBC upgrade tools",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": "Abdelhamid Bakhta",
   "bin": {
     "ibc-upgrade-tools": "./bin/run"
